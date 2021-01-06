@@ -1,0 +1,35 @@
+{
+    "configurations": [
+        {
+            "name": "test1",
+            "includePath": [
+                "${workspaceFolder}/./app/",
+                "${workspaceFolder}/./cmsis_core/Include/",
+                "${workspaceFolder}/./cmsis_device_h7/Include/",
+                "${workspaceFolder}/./stm32h7xx_hal_driver/Inc/",
+                "${workspaceFolder}/./stm32h7xx_hal_driver/Inc/Legacy/"
+            ],
+            "defines": [
+                "USE_FULL_LL_DRIVER",
+                "USE_HAL_DRIVER",
+                "STM32H750xx"
+            ],
+            "compilerArgs": [
+                "-mcpu=cortex-m7",
+                "-mthumb",
+                "-mfpu=fpv5-d16",
+                "-mfloat-abi=hard",
+                "-Og",
+                "-ffreestanding",
+                "-Wall",
+                "-fdata-sections",
+                "-ffunction-sections"
+            ],
+            "compilerPath": "arm-none-eabi-gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "gcc-arm"
+        }
+    ],
+    "version": 4
+}
