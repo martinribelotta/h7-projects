@@ -14,6 +14,13 @@
             "group": "build",
             "label": "make clean",
             "command": "make clean"
+        },
+        {
+            "problemMatcher": "$gcc",
+            "type": "shell",
+            "group": "build",
+            "label": "make burn",
+            "command": "make burn"
         }
     ]
 }

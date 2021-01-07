@@ -29,11 +29,13 @@ IGNORED_SRC+=./cmsis_core/DSP/%
 IGNORED_SRC+=./cmsis_core/RTOS%
 IGNORED_SRC+=./cmsis_core/Device/ST/STM32H7xx/Source/%
 IGNORED_SRC+=./cmsis_device_h7/Source/Templates/%
+IGNORED_SRC+=./qspi-loader/%
 
 IGNORED_INC:=./cmsis_core/Core%
 IGNORED_INC+=./cmsis_core/NN/%
 IGNORED_INC+=./cmsis_core/DSP/%
 IGNORED_INC+=./cmsis_core/RTOS%
+IGNORED_INC+=./qspi-loader/%
 
 C_INCLUDES := $(filter-out $(IGNORED_INC), $(sort $(dir $(call rwildcard,.,*.h))))
 C_SOURCES := $(filter-out $(IGNORED_SRC), $(call rwildcard,.,*.c))
@@ -134,7 +136,7 @@ clean:
 PHONY_TARGETS:=$(filter-out .%, $(shell grep -E '^.PHONY:' Makefile | cut -f 2 -d ':'))
 -include vscode-integration.mk
 
-.PHONY: all clean
+.PHONY: all clean burn
 
 .format:
 	@echo CLANG FORMAT
@@ -146,10 +148,6 @@ PHONY_TARGETS:=$(filter-out .%, $(shell grep -E '^.PHONY:' Makefile | cut -f 2 -
 BURN_ADDR?=0x00000000
 BURN_FILE?=$(TARGET_BIN)
 
-burn: $(TARGET_ELF)
+burn: $(BURN_FILE)
 	@echo BURN...
-	$(Q)openocd -c "debug_level 0" \
-				-c "set firmware $<" \
-	            -c "set target_addr $(BURN_ADDR)" \
-				-c "set binary_file $(BURN_FILE)" \
-				-f burn.tcl
+	$(Q)$(MAKE) -C qspi-loader BURN_ADDR=$(BURN_ADDR) BURN_FILE=$(shell realpath $(BURN_FILE)) burn

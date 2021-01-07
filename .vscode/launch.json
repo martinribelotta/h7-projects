@@ -2,9 +2,9 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch test1",
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceFolder}/build/test1.elf",
+            "name": "Debug Microcontroller",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",
@@ -12,8 +12,13 @@
                 "interface/cmsis-dap.cfg",
                 "target/stm32h7x.cfg"
             ],
-            "runToMain": true,
-            "preLaunchTask": "make all"
+            "overrideLaunchCommands": [
+                "delete mem 2",
+                "mem 0x90000000 0x90400000 ro",
+                "mon reset halt",
+                "b Reset_Handler",
+                "continue"
+            ]
         }
     ]
 }
