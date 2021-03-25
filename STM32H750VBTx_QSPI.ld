@@ -80,6 +80,14 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
+  .rcc_init :
+  {
+    . = ALIGN(4);
+    __rcc_init_start = .;
+    KEEP(*(.rcc_init))
+    KEEP(*(.rcc_init*))
+  } >FLASH
+
   /* The program code and other data goes into FLASH */
   .text :
   {

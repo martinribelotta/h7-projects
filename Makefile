@@ -59,6 +59,7 @@ endif
 
 # Generate dependency information (not use :=, require delayed eval)
 DEP_FLAGS = -MMD -MP -MF"$(@:%.o=%.d)"
+LIST_FLAGS = -Wa,-a,-ad,-alms=$(BUILD_DIR)/o/$(notdir $(<:.c=.lst))
 
 LDSCRIPTS := STM32H750VBTx_QSPI.ld
 
@@ -101,7 +102,7 @@ MKFILE:=
 
 $(BUILD_DIR)/o/%.o: %.c $(MKFILE) | $(BUILD_DIR)
 	@echo CC $<
-	$(Q)$(CC) $(DEP_FLAGS) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/o/$(notdir $(<:.c=.lst)) $< -o $@
+	$(Q)$(CC) $(DEP_FLAGS) -c $(CFLAGS) $(LIST_FLAGS) $< -o $@
 
 $(BUILD_DIR)/o/%.o: %.s $(MKFILE) | $(BUILD_DIR)
 	@echo AS $<
@@ -151,3 +152,28 @@ BURN_FILE?=$(TARGET_BIN)
 burn: $(BURN_FILE)
 	@echo BURN...
 	$(Q)$(MAKE) -C qspi-loader BURN_ADDR=$(BURN_ADDR) BURN_FILE=$(shell realpath $(BURN_FILE)) burn
+
+mkfile_dir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+
+define json_entry
+{
+"directory": "$(mkfile_dir)",
+"command": "$(CC) -c $(CFLAGS) $(strip $1) -o $(strip $(addprefix $(BUILD_DIR)/o/,$(notdir $1)))",
+"file": "$(strip $1)"
+}
+endef
+
+json_entry_sepi:=$(_MK_CBRACK)$(_MK_SPACE)$(_MK_SPACE)$(_MK_OBRACK)
+json_entry_sepo:=$(_MK_CBRACK)$(_MK_COMMA)$(_MK_NEWLINE)$(_MK_OBRACK)
+
+define cc_json
+[
+$(subst $(json_entry_sepi),$(json_entry_sepo), $(foreach f, $(C_SOURCES), $(call json_entry, $f)))
+]
+endef
+export cc_json
+
+.create-ccjson: $(BUILD_DIR)/compile_commands.json
+
+$(BUILD_DIR)/compile_commands.json: Makefile
+	@echo -n "$$cc_json" > $@
