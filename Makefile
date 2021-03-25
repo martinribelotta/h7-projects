@@ -151,7 +151,7 @@ BURN_FILE?=$(TARGET_BIN)
 
 burn: $(BURN_FILE)
 	@echo BURN...
-	$(Q)$(MAKE) -C qspi-loader BURN_ADDR=$(BURN_ADDR) BURN_FILE=$(shell realpath $(BURN_FILE)) burn
+	$(Q)$(MAKE) -C qspi-loader RESET_AT_END=yes BURN_ADDR=$(BURN_ADDR) BURN_FILE=$(shell realpath $(BURN_FILE)) burn
 
 mkfile_dir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
