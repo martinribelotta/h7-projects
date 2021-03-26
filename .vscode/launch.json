@@ -15,10 +15,12 @@
             "overrideLaunchCommands": [
                 "delete mem 2",
                 "mem 0x90000000 0x90400000 ro",
+                "mem 0x20000000 0x20020000 ro",
                 "mon reset halt",
-                "b Reset_Handler",
+                "b main",
                 "continue"
-            ]
+            ],
+            "svdFile": "${workspaceFolder}/STM32H750x.svd"
         }
     ]
 }

@@ -1,11 +1,11 @@
 TARGET = test1
 VERBOSE = n
 DEBUG = 1
-OPT = -Og -ffreestanding
+OPT = -Og
 BUILD_DIR := build
 LIBS :=
 LIBDIR :=
-SPECS :=
+SPECS := nano nosys
 C_DEFS := USE_FULL_LL_DRIVER USE_HAL_DRIVER STM32H750xx
 
 # from https://stackoverflow.com/a/18258352
@@ -71,7 +71,7 @@ LDFLAGS += $(addprefix -l, $(LIBS))
 LDFLAGS += -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
 LDFLAGS += -Wl,--gc-sections
 LDFLAGS += -Wl,--print-memory-usage
-LDFLAGS += -nostartfiles -nodefaultlibs -nolibc
+LDFLAGS += -nostartfiles
 
 SECTIONS := $(sort $(shell grep -oE '\.\S+\s*\:' $(LDSCRIPTS) | tr -d ':'))
 

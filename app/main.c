@@ -1,5 +1,7 @@
 #include <stm32h7xx.h>
 
+#include <stdio.h>
+
 UART_HandleTypeDef huart1;
 
 void Error_Handler(void)
@@ -8,7 +10,6 @@ void Error_Handler(void)
     while (1)
         ;
 }
-
 
 void MX_GPIO_Init(void)
 {
@@ -56,14 +57,21 @@ void MX_USART1_UART_Init(void)
     }
 }
 
-static const char msg[] = "Hola mundo!\n";
+int _write(int fd, const void *ptr, unsigned int count)
+{
+    HAL_UART_Transmit(&huart1, (uint8_t*) ptr, count, HAL_MAX_DELAY);
+    return count;
+}
 
 int main(void) {
-    SCB_EnableICache();
-    SCB_EnableDCache();
-    HAL_Init();
+    int counter = 0;
     MX_GPIO_Init();
     MX_USART1_UART_Init();
-    HAL_UART_Transmit(&huart1, (uint8_t*) msg, sizeof(msg) - 1, HAL_MAX_DELAY);
+    printf("Hello world\n");
+    while (1) {
+        printf("Counter is %d\n", counter);
+        HAL_Delay(1000);
+        counter++;
+    }
     return 0;
 }
