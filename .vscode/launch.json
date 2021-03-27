@@ -2,9 +2,9 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch test1",
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceFolder}/build/test1.elf",
-            "name": "Debug Microcontroller",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",
@@ -12,15 +12,8 @@
                 "interface/cmsis-dap.cfg",
                 "target/stm32h7x.cfg"
             ],
-            "overrideLaunchCommands": [
-                "delete mem 2",
-                "mem 0x90000000 0x90400000 ro",
-                "mem 0x20000000 0x20020000 ro",
-                "mon reset halt",
-                "b main",
-                "continue"
-            ],
-            "svdFile": "${workspaceFolder}/STM32H750x.svd"
+            "runToMain": true,
+            "preLaunchTask": "make all"
         }
     ]
 }

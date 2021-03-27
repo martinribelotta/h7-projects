@@ -6,7 +6,7 @@ BUILD_DIR := build
 LIBS :=
 LIBDIR :=
 SPECS := nano nosys
-C_DEFS := USE_FULL_LL_DRIVER USE_HAL_DRIVER STM32H750xx
+C_DEFS :=
 
 # from https://stackoverflow.com/a/18258352
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
@@ -20,26 +20,11 @@ HEX := $(CP) -O ihex
 BIN := $(CP) -O binary -S
 LST := $(PREFIX)objdump
 
-MCU := -mcpu=cortex-m7 -mthumb -mfpu=fpv5-d16 -mfloat-abi=hard
+C_INCLUDES := $(sort $(dir $(call rwildcard, app,*.h)))
+C_SOURCES := $(call rwildcard, app,*.c)
+ASM_SOURCES := $(call rwildcard, app,*.s)
 
-IGNORED_SRC:=%_template.c
-IGNORED_SRC+=./cmsis_core/Core%
-IGNORED_SRC+=./cmsis_core/NN/%
-IGNORED_SRC+=./cmsis_core/DSP/%
-IGNORED_SRC+=./cmsis_core/RTOS%
-IGNORED_SRC+=./cmsis_core/Device/ST/STM32H7xx/Source/%
-IGNORED_SRC+=./cmsis_device_h7/Source/Templates/%
-IGNORED_SRC+=./qspi-loader/%
-
-IGNORED_INC:=./cmsis_core/Core%
-IGNORED_INC+=./cmsis_core/NN/%
-IGNORED_INC+=./cmsis_core/DSP/%
-IGNORED_INC+=./cmsis_core/RTOS%
-IGNORED_INC+=./qspi-loader/%
-
-C_INCLUDES := $(filter-out $(IGNORED_INC), $(sort $(dir $(call rwildcard,.,*.h))))
-C_SOURCES := $(filter-out $(IGNORED_SRC), $(call rwildcard,.,*.c))
-ASM_SOURCES := $(filter-out $(IGNORED_SRC), $(call rwildcard,.,*.s))
+include libstm32h7/stmlib.mk
 
 COMMON_FLAGS := $(MCU) $(OPT) -Wall -fdata-sections -ffunction-sections
 
@@ -56,12 +41,9 @@ ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
 endif
 
-
 # Generate dependency information (not use :=, require delayed eval)
 DEP_FLAGS = -MMD -MP -MF"$(@:%.o=%.d)"
 LIST_FLAGS = -Wa,-a,-ad,-alms=$(BUILD_DIR)/o/$(notdir $(<:.c=.lst))
-
-LDSCRIPTS := STM32H750VBTx_QSPI.ld
 
 LDFLAGS := $(MCU)
 LDFLAGS += $(SPECS_FLAGS)
@@ -141,10 +123,10 @@ PHONY_TARGETS:=$(filter-out .%, $(shell grep -E '^.PHONY:' Makefile | cut -f 2 -
 
 .format:
 	@echo CLANG FORMAT
-	@clang-format --verbose -i $(wildcard Core/*/*.c) $(wildcard Core/*/*.h)
+	@clang-format --verbose -i $(wildcard app/*/*.c) $(wildcard app/*/*.h)
 
 .print-%:
-	@echo $($*)
+	@echo "$($*)"
 
 BURN_ADDR?=0x00000000
 BURN_FILE?=$(TARGET_BIN)
@@ -158,7 +140,7 @@ mkfile_dir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 define json_entry
 {
 "directory": "$(mkfile_dir)",
-"command": "$(CC) -c $(CFLAGS) $(strip $1) -o $(strip $(addprefix $(BUILD_DIR)/o/,$(notdir $1)))",
+"command": "$(CC) -c $(CFLAGS) $(strip $1) -o $(patsubst %.c, %.o, $(strip $(addprefix $(BUILD_DIR)/o/,$(notdir $1))))",
 "file": "$(strip $1)"
 }
 endef

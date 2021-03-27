@@ -3,11 +3,11 @@
         {
             "name": "test1",
             "includePath": [
-                "${workspaceFolder}/./app/",
-                "${workspaceFolder}/./cmsis_core/Include/",
-                "${workspaceFolder}/./cmsis_device_h7/Include/",
-                "${workspaceFolder}/./stm32h7xx_hal_driver/Inc/",
-                "${workspaceFolder}/./stm32h7xx_hal_driver/Inc/Legacy/"
+                "${workspaceFolder}/app/",
+                "${workspaceFolder}/libstm32h7/cmsis_core/Include/",
+                "${workspaceFolder}/libstm32h7/cmsis_device_h7/Include/",
+                "${workspaceFolder}/libstm32h7/stm32h7xx_hal_driver/Inc/",
+                "${workspaceFolder}/libstm32h7/stm32h7xx_hal_driver/Inc/Legacy/"
             ],
             "defines": [
                 "USE_FULL_LL_DRIVER",
@@ -20,7 +20,6 @@
                 "-mfpu=fpv5-d16",
                 "-mfloat-abi=hard",
                 "-Og",
-                "-ffreestanding",
                 "-Wall",
                 "-fdata-sections",
                 "-ffunction-sections"
