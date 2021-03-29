@@ -96,6 +96,7 @@ LoopFillZerobss:
   bl __libc_init_array
 /* Call the application's entry point.*/
   bl  main
+  bl  __libc_fini_array
   b .
 .size  Reset_Handler, .-Reset_Handler
 

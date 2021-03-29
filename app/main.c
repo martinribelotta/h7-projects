@@ -2,16 +2,16 @@
 
 #include <stdio.h>
 
-UART_HandleTypeDef huart1;
+static UART_HandleTypeDef huart1;
 
-void Error_Handler(void)
+static void Error_Handler(void)
 {
     __BKPT(0);
     while (1)
         ;
 }
 
-void MX_GPIO_Init(void)
+static void MX_GPIO_Init(void)
 {
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -28,7 +28,7 @@ void MX_GPIO_Init(void)
     HAL_GPIO_Init(GPIOA, &gpio);
 }
 
-void MX_USART1_UART_Init(void)
+static void MX_USART1_UART_Init(void)
 {
     huart1.Instance = USART1;
     huart1.Init.BaudRate = 115200;
@@ -57,21 +57,23 @@ void MX_USART1_UART_Init(void)
     }
 }
 
+#ifdef __cplusplus
+extern "C"
+#endif
 int _write(int fd, const void *ptr, unsigned int count)
 {
     HAL_UART_Transmit(&huart1, (uint8_t*) ptr, count, HAL_MAX_DELAY);
     return count;
 }
 
-int main(void) {
-    int counter = 0;
+int main(void)
+{
     MX_GPIO_Init();
     MX_USART1_UART_Init();
     printf("Hello world\n");
-    while (1) {
+    for (int counter = 0; ; counter++) {
         printf("Counter is %d\n", counter);
         HAL_Delay(1000);
-        counter++;
     }
     return 0;
 }

@@ -7,21 +7,17 @@ LIBS :=
 LIBDIR :=
 SPECS := nano nosys
 C_DEFS :=
+C_STD := c99
+CXX_STD := c++11
 
 # from https://stackoverflow.com/a/18258352
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 
-PREFIX := arm-none-eabi-
-CC := $(PREFIX)gcc
-AS := $(PREFIX)gcc -x assembler-with-cpp
-CP := $(PREFIX)objcopy
-SZ := $(PREFIX)size
-HEX := $(CP) -O ihex
-BIN := $(CP) -O binary -S
-LST := $(PREFIX)objdump
-
 C_INCLUDES := $(sort $(dir $(call rwildcard, app,*.h)))
 C_SOURCES := $(call rwildcard, app,*.c)
+CXX_INCLUDES += $(sort $(dir $(call rwildcard, app,*.hh)))
+CXX_INCLUDES += $(sort $(dir $(call rwildcard, app,*.hpp)))
+CXX_SOURCES := $(call rwildcard, app,*.cpp)
 ASM_SOURCES := $(call rwildcard, app,*.s)
 
 include libstm32h7/stmlib.mk
@@ -36,6 +32,15 @@ CFLAGS := $(COMMON_FLAGS)
 CFLAGS += $(addprefix -D, $(C_DEFS))
 CFLAGS += $(addprefix -I, $(C_INCLUDES))
 CFLAGS += $(SPECS_FLAGS)
+
+CXXFLAGS := $(CFLAGS)
+CXXFLAGS := $(CFLAGS)
+CXXFLAGS := $(CFLAGS)
+CXXFLAGS += -fno-rtti -fno-exceptions
+CFLAGS += $(addprefix -I, $(CXX_INCLUDES))
+CXXFLAGS += -std=$(CXX_STD)
+
+CFLAGS += -std=$(C_STD)
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
@@ -64,14 +69,31 @@ TARGET_HEX:=$(BUILD_DIR)/$(TARGET).hex
 TARGET_BIN:=$(BUILD_DIR)/$(TARGET).bin
 TARGET_LST:=$(BUILD_DIR)/$(TARGET).lst
 
+PREFIX := arm-none-eabi-
+CC := $(PREFIX)gcc
+CXX := $(PREFIX)g++
+ifeq ($(strip $(CXX_SOURCES)),)
+LD := $(CC)
+else
+LD := $(CXX)
+endif
+AS := $(PREFIX)gcc -x assembler-with-cpp
+CP := $(PREFIX)objcopy
+SZ := $(PREFIX)size
+HEX := $(CP) -O ihex
+BIN := $(CP) -O binary -S
+LST := $(PREFIX)objdump
+
 all: $(TARGET_ELF) $(TARGET_HEX) $(TARGET_BIN) $(TARGET_LST)
 
-OBJECTS = $(addprefix $(BUILD_DIR)/o/,$(notdir $(C_SOURCES:.c=.o)))
+OBJECTS := $(addprefix $(BUILD_DIR)/o/,$(notdir $(CXX_SOURCES:.cpp=.o)))
+vpath %.cpp $(sort $(dir $(CXX_SOURCES)))
+
+OBJECTS += $(addprefix $(BUILD_DIR)/o/,$(notdir $(C_SOURCES:.c=.o)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 
 OBJECTS += $(addprefix $(BUILD_DIR)/o/,$(notdir $(ASM_SOURCES:.s=.o)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
-
 
 ifeq ($(strip $(VERBOSE)),y)
 Q=
@@ -85,6 +107,10 @@ MKFILE:=
 $(BUILD_DIR)/o/%.o: %.c $(MKFILE) | $(BUILD_DIR)
 	@echo CC $<
 	$(Q)$(CC) $(DEP_FLAGS) -c $(CFLAGS) $(LIST_FLAGS) $< -o $@
+
+$(BUILD_DIR)/o/%.o: %.cpp $(MKFILE) | $(BUILD_DIR)
+	@echo CXX $<
+	$(Q)$(CXX) $(DEP_FLAGS) -c $(CXXFLAGS) $(LIST_FLAGS) $< -o $@
 
 $(BUILD_DIR)/o/%.o: %.s $(MKFILE) | $(BUILD_DIR)
 	@echo AS $<
