@@ -163,10 +163,18 @@ burn: $(BURN_FILE)
 
 mkfile_dir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-define json_entry
+define json_entry_cc
 {
 "directory": "$(mkfile_dir)",
 "command": "$(CC) -c $(CFLAGS) $(strip $1) -o $(patsubst %.c, %.o, $(strip $(addprefix $(BUILD_DIR)/o/,$(notdir $1))))",
+"file": "$(strip $1)"
+}
+endef
+
+define json_entry_cxx
+{
+"directory": "$(mkfile_dir)",
+"command": "$(CXX) -c $(CXXFLAGS) $(strip $1) -o $(patsubst %.cpp, %.o, $(strip $(addprefix $(BUILD_DIR)/o/,$(notdir $1))))",
 "file": "$(strip $1)"
 }
 endef
@@ -176,7 +184,8 @@ json_entry_sepo:=$(_MK_CBRACK)$(_MK_COMMA)$(_MK_NEWLINE)$(_MK_OBRACK)
 
 define cc_json
 [
-$(subst $(json_entry_sepi),$(json_entry_sepo), $(foreach f, $(C_SOURCES), $(call json_entry, $f)))
+$(subst $(json_entry_sepi),$(json_entry_sepo), $(foreach f, $(C_SOURCES), $(call json_entry_cc, $f)))
+$(subst $(json_entry_sepi),$(json_entry_sepo), $(foreach f, $(CXX_SOURCES), $(call json_entry_cxx, $f)))
 ]
 endef
 export cc_json
