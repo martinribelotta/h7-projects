@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+BASE=$(dirname $(realpath $0))
+BUILD=${BASE}/build
+mkdir -p ${BUILD}
+(
+    cd ${BUILD}
+    cmake -DCMAKE_TOOLCHAIN_FILE=${BASE}/cmake/toolchain-arm_eabi.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE:STRING=Debug -H${BASE} -B${BUILD} -G Ninja
+)
