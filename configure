@@ -44,18 +44,16 @@ BASE=$(dirname $(realpath $0))
 BUILD=${BASE}/${BUILDIR}
 test -d ${BUILD} && rm -fr ${BUILD}
 mkdir -p ${BUILD}
-(
-    cd ${BUILD}
-    echo "Building on ${BUILD}"
-    if [[ ${GEN_CCMD_JSON} == "TRUE" ]]; then
-        echo "Build for debug"
-    fi
-    if [[ ${GEN_CCMD_JSON} == "TRUE" ]]; then
-        echo "Generate compile_commands.json"
-    fi
-    echo "Using ${GEN} generator"
-    cmake -DCMAKE_TOOLCHAIN_FILE=${BASE}/cmake/toolchain-arm_eabi.cmake \
-          -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=${GEN_CCMD_JSON} \
-          -DCMAKE_BUILD_TYPE:STRING=${BUILDTYPE} \
-          -H${BASE} -B${BUILD} -G "${GEN}"
-)
+cd ${BUILD}
+echo "Building on ${BUILD}"
+if [[ ${GEN_CCMD_JSON} == "TRUE" ]]; then
+    echo "Build for debug"
+fi
+if [[ ${GEN_CCMD_JSON} == "TRUE" ]]; then
+    echo "Generate compile_commands.json"
+fi
+echo "Using ${GEN} generator"
+cmake -DCMAKE_TOOLCHAIN_FILE=${BASE}/cmake/toolchain-arm_eabi.cmake \
+        -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=${GEN_CCMD_JSON} \
+        -DCMAKE_BUILD_TYPE:STRING=${BUILDTYPE} \
+        -H${BASE} -B${BUILD} -G "${GEN}"
