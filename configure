@@ -1,11 +1,61 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
+GEN=Ninja
+BUILDIR=build
+BUILDTYPE=Debug
+GEN_CCMD_JSON=TRUE
+
+for i in $@
+do
+    case $i in
+        --make)
+            if [[ ${OSTYPE} == "win32" ]]; then
+                GEN="MSYS Makefiles"
+            else
+                GEN="Unix Makefiles"
+            fi
+            ;;
+        --ninja)
+            GEN=Ninja
+            ;;
+        -G=*)
+            GEN=${i##-G=}
+            ;;
+        --release)
+            BUILDTYPE=Release
+            ;;
+        --debug)
+            BUILDTYPE=Debug
+            ;;
+        --gen-compile-commands)
+            GEN_CCMD_JSON=TRUE
+            ;;
+        --no-gen-compile-commands)
+            GEN_CCMD_JSON=FALSE
+            ;;
+        *)
+            ;;
+    esac
+done
+
 BASE=$(dirname $(realpath $0))
-BUILD=${BASE}/build
+BUILD=${BASE}/${BUILDIR}
+test -d ${BUILD} && rm -fr ${BUILD}
 mkdir -p ${BUILD}
 (
     cd ${BUILD}
-    cmake -DCMAKE_TOOLCHAIN_FILE=${BASE}/cmake/toolchain-arm_eabi.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE:STRING=Debug -H${BASE} -B${BUILD} -G Ninja
+    echo "Building on ${BUILD}"
+    if [[ ${GEN_CCMD_JSON} == "TRUE" ]]; then
+        echo "Build for debug"
+    fi
+    if [[ ${GEN_CCMD_JSON} == "TRUE" ]]; then
+        echo "Generate compile_commands.json"
+    fi
+    echo "Using ${GEN} generator"
+    cmake -DCMAKE_TOOLCHAIN_FILE=${BASE}/cmake/toolchain-arm_eabi.cmake \
+          -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=${GEN_CCMD_JSON} \
+          -DCMAKE_BUILD_TYPE:STRING=${BUILDTYPE} \
+          -H${BASE} -B${BUILD} -G "${GEN}"
 )
