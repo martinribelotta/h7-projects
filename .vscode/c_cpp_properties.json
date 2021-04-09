@@ -2,32 +2,11 @@
     "configurations": [
         {
             "name": "test1",
-            "includePath": [
-                "${workspaceFolder}/app/",
-                "${workspaceFolder}/libstm32h7/cmsis_core/Include/",
-                "${workspaceFolder}/libstm32h7/cmsis_device_h7/Include/",
-                "${workspaceFolder}/libstm32h7/stm32h7xx_hal_driver/Inc/",
-                "${workspaceFolder}/libstm32h7/stm32h7xx_hal_driver/Inc/Legacy/"
-            ],
-            "defines": [
-                "USE_FULL_LL_DRIVER",
-                "USE_HAL_DRIVER",
-                "STM32H750xx"
-            ],
-            "compilerArgs": [
-                "-mcpu=cortex-m7",
-                "-mthumb",
-                "-mfpu=fpv5-d16",
-                "-mfloat-abi=hard",
-                "-Og",
-                "-Wall",
-                "-fdata-sections",
-                "-ffunction-sections"
-            ],
             "compilerPath": "arm-none-eabi-gcc",
             "cStandard": "c11",
             "cppStandard": "c++11",
             "intelliSenseMode": "gcc-arm",
+            "configurationProvider": "go2sh.cmake-integration",
             "compileCommands": "${workspaceFolder}/build/compile_commands.json"
         }
     ],

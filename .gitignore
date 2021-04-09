@@ -6,3 +6,4 @@
 *.bin
 *.hex
 compile_commands.json
+build/*
