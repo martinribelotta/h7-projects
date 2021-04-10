@@ -70,7 +70,7 @@ int main(void)
 {
     MX_GPIO_Init();
     MX_USART1_UART_Init();
-    printf("Hello world\n");
+    printf("Hello world at " __DATE__ " " __TIME__ "\n");
     for (int counter = 0; ; counter++) {
         printf("Counter is %d\n", counter);
         HAL_Delay(1000);

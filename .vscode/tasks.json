@@ -5,22 +5,8 @@
             "problemMatcher": "$gcc",
             "type": "shell",
             "group": "build",
-            "label": "make all",
-            "command": "make all"
-        },
-        {
-            "problemMatcher": "$gcc",
-            "type": "shell",
-            "group": "build",
-            "label": "make clean",
-            "command": "make clean"
-        },
-        {
-            "problemMatcher": "$gcc",
-            "type": "shell",
-            "group": "build",
-            "label": "make burn",
-            "command": "make burn"
+            "label": "cmake build and flash",
+            "command": "ninja -C ${command:cmake.buildDirectory} burn-${command:cmake.launchTargetFilename}"
         }
     ]
 }
