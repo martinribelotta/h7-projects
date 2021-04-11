@@ -73,7 +73,7 @@ int main(void)
     printf("Hello world at " __DATE__ " " __TIME__ "\n");
     for (int counter = 0; ; counter++) {
         printf("Counter is %d\n", counter);
-        HAL_Delay(1000);
+        HAL_Delay(300);
     }
     return 0;
 }

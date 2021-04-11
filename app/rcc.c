@@ -1,6 +1,9 @@
 #include "rcc.h"
 
 RCC_SECTION const rcc_init_t rcc = {
+    .flashLatency = FLASH_LATENCY_4,
+    .voltageScale = PWR_REGULATOR_VOLTAGE_SCALE0,
+    .configSupply = PWR_LDO_SUPPLY,
     .RCC_OscInitStruct = {
         .OscillatorType = RCC_OSCILLATORTYPE_HSE,
         .HSEState = RCC_HSE_ON,
