@@ -134,7 +134,7 @@ g_pfnVectors:
   .word  BusFault_Handler
   .word  UsageFault_Handler
   .word  __rcc_init_start
-  .word  0
+  .word  1
   .word  0
   .word  0
   .word  SVC_Handler
