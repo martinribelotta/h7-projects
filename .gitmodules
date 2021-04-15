@@ -11,6 +11,6 @@
 	url = https://github.com/STMicroelectronics/cmsis_device_h7.git
 	branch = v10.1.0
 [submodule "qspi-loader"]
-	path = qspi-loader
+	path = tools/qspi-loader
 	url = https://github.com/martinribelotta/h7-qspi-loader.git
 	branch = master
